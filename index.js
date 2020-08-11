@@ -1,15 +1,16 @@
+var express = require('express');
 var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
-var sendinfo;
+app.use(express.static(__dirname + '/public'));
 
 app.get('/', (req, res) => {
-   res.sendFile(__dirname + '/index.html');
+   res.sendFile(__dirname + '/html/index.html');
 });
 
 app.get('/send/:info', (req,res) => {
-  res.sendFile(__dirname + '/void.html');
+  res.sendFile(__dirname + '/html/void.html');
   io.emit('chat message', req.params.info);
 });
 

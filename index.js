@@ -17,8 +17,10 @@ app.get('/send/:info', (req,res) => {
 
 io.on('connection', (socket) => {
   console.log('User connected from: ' + socket.handshake.address);
+  io.emit('chat message', 'User connected from: ' + socket.handshake.address);
   socket.on('disconnect', () => {
     console.log('User disconnected from: ' + socket.handshake.address);
+    io.emit('chat message', 'User disconnected from: ' + socket.handshake.address);
   });
   socket.on('chat message', (msg) => {
     console.log('Message from ' + msg);

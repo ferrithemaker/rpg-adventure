@@ -11,16 +11,17 @@ app.get('/', (req, res) => {
 
 app.get('/send/:info', (req,res) => {
   res.sendFile(__dirname + '/html/void.html');
-  io.emit('chat message', req.params.info);
+  io.emit('chat message', 'message from send endpoint: ' + req.params.info);
+  console.log('Message from /send/ endpoint: ' + req.params.info);
 });
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
+  console.log('User connected from: ' + socket.handshake.address);
   socket.on('disconnect', () => {
-    console.log('user disconnected');
+    console.log('User disconnected from: ' + socket.handshake.address);
   });
   socket.on('chat message', (msg) => {
-    console.log('message: ' + msg);
+    console.log('Message from ' + msg);
     io.emit('chat message', msg);
   });
 });

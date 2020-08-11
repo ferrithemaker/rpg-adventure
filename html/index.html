@@ -5,25 +5,29 @@
     <link rel="stylesheet" href="/css/default.css">
   </head>
   <body>
+    <p>Bienvenido al rpg-adventure project, esta seria la interfaz principal del juego, donde el jugador o jugadores pueden interactuar con el entorno.</p>
+    <p>Ahora basicamente es un chat multiusuario inspirado en un ejemplo de sockets.io :P</p>
     <ul id="messages"></ul>
     <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
+      Name: <input id="name" autocomplete="off" /><br />
+      Message: <input id="message" autocomplete="off" />
+      <button>Send</button>
     </form>
   <script src="/socket.io/socket.io.js"></script>
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script>
   $(function () {
     var socket = io();
     $('form').submit(function(e) {
       e.preventDefault(); // prevents page reloading
-      socket.emit('chat message', $('#m').val());
-      $('#m').val('');
+      socket.emit('chat message', $('#name').val().concat(': ').concat($('#message').val()));
+      $('#message').val('');
       return false;
     });
     socket.on('chat message', function(msg){
       $('#messages').append($('<li>').text(msg));
     });
   });
-</script>
+  </script>
   </body>
 </html>

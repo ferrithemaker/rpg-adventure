@@ -1,4 +1,4 @@
-var express = require('express');
+var express = require('express'),cookieParser = require('cookie-parser');
 var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
@@ -29,6 +29,7 @@ app.get('/', (req, res) => {
 
 app.get('/home', (req, res) => {
    res.sendFile(__dirname + '/html/home.html');
+   console.log(req.session.username);
 });
 
 app.get('/send/:info', (req,res) => {
@@ -63,6 +64,7 @@ app.post('/auth', function(request, response) {
 				if (result.length > 0) {
 					request.session.loggedin = true;
 					request.session.username = username;
+					response.cookie('username', username)
 					response.redirect('/home');
 				} else {
 					response.send('Incorrect Username and/or Password!');

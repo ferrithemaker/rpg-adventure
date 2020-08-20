@@ -15,13 +15,18 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script>
+   function getCookieValue(a) {
+	var b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
+    return b ? b.pop() : '';
+   }
+   var username = getCookieValue("username");
   $(function () {
+	  console.log("eo "+ username);
     var socket = io();
-    alert(@Session["username"]);
     $('form').submit(function(e) {
       e.preventDefault(); // prevents page reloading
-      //socket.emit('chat message', $('#name').val().concat(': ').concat($('#message').val()));
-      socket.emit('chat message', $('#message').val());
+      socket.emit('chat message', username.concat(': ').concat($('#message').val()));
+      //socket.emit('chat message', $('#message').val());
       $('#message').val('');
       return false;
     });

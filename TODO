@@ -5,9 +5,10 @@ Infraestructura:
 He pensado en utilizar node.js con express y sockets.io para conseguir un entorno web multiusuario interactivo y asincrono, no se que os parece, pero creo que con otros lenguajes como PHP 'oldstyle' mas pensados para entornos sincronos son bastante farragosos de implementar.
 En realidad esto solo es un chat, pero creo que sive como base para la infraestructura, faltaria añadir un sistema para guardar los jugadores, su estado, añadir un sistema de login, etc... como los elementos mas relevantes.
 
-- Login / Registro
-- Base de datos para almacenar el estado de los jugadores
-- Muchas otras cosas seguro...
+- Registro (ahora login con usuario estaticos)
+- BBDD (Mongodb) para entorno de juego
+- Usar un motor de templates html para evitar compartir dato mediante cookies.
+- Muchas mas cosas...
 
 Logica:
 

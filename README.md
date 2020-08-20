@@ -3,7 +3,8 @@
 Local installation instructions:
 
 - download and install node.js from https://nodejs.org/en/download/
+- download and install mongoDB from https://www.mongodb.com/
 - clone the repo
 - execute `npm install` inside de repo folder to install all the dependecies
 - run `node index.js` to run the server
-- open your browser and go to `localhost:8080`
+- open your browser and go to `localhost:5000`

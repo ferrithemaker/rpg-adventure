@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="/css/default.css">
   </head>
   <body>
-    <p>Bienvenido al rpg-adventure project, esta seria la interfaz principal del juego, donde el jugador o jugadores pueden interactuar con el entorno.</p>
+    <p>Bienvenido al rpg-adventure project <span id="user"></span>! Esta seria la interfaz principal del juego, donde el jugador o jugadores pueden interactuar con el entorno.</p>
     <p>Ahora basicamente es un chat multiusuario inspirado en un ejemplo de sockets.io :P</p>
     <ul id="messages"></ul>
     <form action="">
@@ -20,8 +20,8 @@
     return b ? b.pop() : '';
    }
    var username = getCookieValue("username");
+   document.getElementById("user").innerHTML = username;
   $(function () {
-	  console.log("eo "+ username);
     var socket = io();
     $('form').submit(function(e) {
       e.preventDefault(); // prevents page reloading

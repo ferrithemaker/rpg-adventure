@@ -9,7 +9,6 @@
     <p>Ahora basicamente es un chat multiusuario inspirado en un ejemplo de sockets.io :P</p>
     <ul id="messages"></ul>
     <form action="">
-      Name: <input id="name" autocomplete="off" /><br />
       Message: <input id="message" autocomplete="off" />
       <button>Send</button>
     </form>
@@ -18,9 +17,11 @@
   <script>
   $(function () {
     var socket = io();
+    alert(@Session["username"]);
     $('form').submit(function(e) {
       e.preventDefault(); // prevents page reloading
-      socket.emit('chat message', $('#name').val().concat(': ').concat($('#message').val()));
+      //socket.emit('chat message', $('#name').val().concat(': ').concat($('#message').val()));
+      socket.emit('chat message', $('#message').val());
       $('#message').val('');
       return false;
     });

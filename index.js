@@ -23,13 +23,16 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
 
-app.get('/', (req, res) => {
+app.get('/', (request, res) => {
    res.sendFile(__dirname + '/html/login.html');
 });
 
 app.get('/home', (req, res) => {
-   res.sendFile(__dirname + '/html/home.html');
-   console.log(req.session.username);
+	if (req.session.loggedin) {
+		res.sendFile(__dirname + '/html/home.html');
+		console.log(req.session.username);
+	}
+   
 });
 
 app.get('/send/:info', (req,res) => {

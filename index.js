@@ -9,6 +9,7 @@ var mongo = require('mongodb');
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/rpg";
 
+var dbo;
 
 app.use(session({
 	secret: 'rpg-secret',
@@ -49,6 +50,12 @@ io.on('connection', (socket) => {
     io.emit('chat message', 'User disconnected from: ' + socket.handshake.address);
   });
   socket.on('chat message', (msg) => {
+	dbo.collection("users").findOne({}, function(err, result) {
+		if (err) throw err;
+		//console.log(result);
+		//if (msg="up" && result.room='1') {
+		//}
+	});
     console.log('Message from ' + msg);
     io.emit('chat message', msg);
   });
@@ -58,28 +65,28 @@ app.post('/auth', function(request, response) {
 	var username = request.body.username;
 	var password = request.body.password;
 	if (username && password) {
-		MongoClient.connect(url,{useUnifiedTopology: true,useNewUrlParser: true}, function(err, db) {
-			var dbo = db.db("rpg");
-			var query = { name: username, passwd: password };
-			dbo.collection("users").find(query).toArray(function(err, result) {
-				if (err) throw err;
-				db.close();
-				if (result.length > 0) {
-					request.session.loggedin = true;
-					request.session.username = username;
-					response.cookie('username', username)
-					response.redirect('/home');
-				} else {
-					response.send('Incorrect Username and/or Password!');
-				}			
-				response.end();
-			});
+		var query = { name: username, passwd: password };
+		dbo.collection("users").find(query).toArray(function(err, result) {
+			if (err) throw err;
+			if (result.length > 0) {
+				request.session.loggedin = true;
+				request.session.username = username;
+				response.cookie('username', username);
+				response.redirect('/home');
+			} else {
+				response.send('Incorrect Username and/or Password!');
+			}			
+			response.end();
 		});
 	} else {
 		response.send('Please enter Username and Password!');
 		response.end();
 	}
 });
+
+MongoClient.connect(url,{useUnifiedTopology: true,useNewUrlParser: true}, function(err, db) {
+			dbo = db.db("rpg");
+		});
 
 http.listen(5000, () => {
   console.log('listening on *:5000');

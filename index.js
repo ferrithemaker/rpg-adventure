@@ -32,6 +32,12 @@ app.get('/home', (req, res) => {
 	if (req.session.loggedin) {
 		res.sendFile(__dirname + '/html/home.html');
 		console.log(req.session.username);
+		dbo.collection("users").findOne({}, function(err, result) {
+			if (err) throw err;
+			//console.log(result);
+			//if (msg="up" && result.room='1') {
+			//}
+		});
 	}
    
 });
@@ -50,15 +56,35 @@ io.on('connection', (socket) => {
     io.emit('chat message', 'User disconnected from: ' + socket.handshake.address);
   });
   socket.on('chat message', (msg) => {
-	dbo.collection("users").findOne({}, function(err, result) {
-		if (err) throw err;
-		//console.log(result);
-		//if (msg="up" && result.room='1') {
-		//}
-	});
-    console.log('Message from ' + msg);
-    io.emit('chat message', msg);
+		var query = {name: msg['username']};
+		dbo.collection("users").find(query).toArray(function(err_users, result_users) {
+			if (err_users) throw err_users;
+			console.log(result_users[0]);
+			console.log(result_users[0].room);
+			var query = {room_id: result_users[0].room};
+			console.log(query);
+				dbo.collection("rooms").find(query).toArray(function(err_rooms, result_rooms) {
+				if (err_rooms) throw err_rooms;
+				console.log(result_rooms);
+				if (msg['msg']=="up" && result_rooms[0].up!='0') {
+				}
+				if (msg['msg']=="down" && result_rooms[0].down!='0') {
+				}
+				if (msg['msg']=="left" && result_rooms[0].left!='0') {
+				}
+				if (msg['msg']=="right" && result_rooms[0].right!='0') {
+				}
+				if (msg['msg']=="where") {
+					socket.emit('chat message', result_rooms[0].description);
+				}
+			});
+		});
+    console.log('Message from ' + msg['username'] + ":" + msg['msg']);
+    //io.emit('chat message', msg['username'] + ":" + msg['msg']);
   });
+	socket.on('signin', (msg) => {
+		// get socket_id
+	});
 });
 
 app.post('/auth', function(request, response) {

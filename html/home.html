@@ -25,8 +25,10 @@
     var socket = io();
     $('form').submit(function(e) {
       e.preventDefault(); // prevents page reloading
-      socket.emit('chat message', username.concat(': ').concat($('#message').val()));
+      //socket.emit('chat message', username.concat(': ').concat($('#message').val()));
+      socket.emit('chat message', {username: username, msg: ($('#message').val())});
       //socket.emit('chat message', $('#message').val());
+      //socket.emit('username', username);
       $('#message').val('');
       return false;
     });

@@ -23,6 +23,7 @@
    document.getElementById("user").innerHTML = username;
   $(function () {
     var socket = io();
+    socket.emit('signin', username);
     $('form').submit(function(e) {
       e.preventDefault(); // prevents page reloading
       //socket.emit('chat message', username.concat(': ').concat($('#message').val()));

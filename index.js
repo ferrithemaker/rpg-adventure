@@ -35,8 +35,6 @@ app.get('/home', (req, res) => {
 		dbo.collection("users").findOne({}, function(err, result) {
 			if (err) throw err;
 			//console.log(result);
-			//if (msg="up" && result.room='1') {
-			//}
 		});
 	}
    
@@ -67,12 +65,48 @@ io.on('connection', (socket) => {
 				if (err_rooms) throw err_rooms;
 				console.log(result_rooms);
 				if (msg['msg']=="up" && result_rooms[0].up!='0') {
+					var query = { name: msg['username'] };
+					var newvalues = { $set: {room: result_rooms[0].up } };
+					dbo.collection("users").updateOne(query, newvalues, function(err, res) {
+					});
+					var query = {room_id: result_rooms[0].up};
+					dbo.collection("rooms").find(query).toArray(function(err_newrooms, result_newrooms) {
+						if (err_newrooms) throw err_newrooms;
+						socket.emit('chat message', result_newrooms[0].description);
+					});
 				}
 				if (msg['msg']=="down" && result_rooms[0].down!='0') {
+					var query = { name: msg['username'] };
+					var newvalues = { $set: {room: result_rooms[0].down } };
+					dbo.collection("users").updateOne(query, newvalues, function(err, res) {
+					});
+					var query = {room_id: result_rooms[0].down};
+					dbo.collection("rooms").find(query).toArray(function(err_newrooms, result_newrooms) {
+						if (err_newrooms) throw err_newrooms;
+						socket.emit('chat message', result_newrooms[0].description);
+					});
 				}
 				if (msg['msg']=="left" && result_rooms[0].left!='0') {
+					var query = { name: msg['username'] };
+					var newvalues = { $set: {room: result_rooms[0].left } };
+					dbo.collection("users").updateOne(query, newvalues, function(err, res) {
+					});
+					var query = {room_id: result_rooms[0].left};
+					dbo.collection("rooms").find(query).toArray(function(err_newrooms, result_newrooms) {
+						if (err_newrooms) throw err_newrooms;
+						socket.emit('chat message', result_newrooms[0].description);
+					});
 				}
 				if (msg['msg']=="right" && result_rooms[0].right!='0') {
+					var query = { name: msg['username'] };
+					var newvalues = { $set: {room: result_rooms[0].right } };
+					dbo.collection("users").updateOne(query, newvalues, function(err, res) {
+					});
+					var query = {room_id: result_rooms[0].right};
+					dbo.collection("rooms").find(query).toArray(function(err_newrooms, result_newrooms) {
+						if (err_newrooms) throw err_newrooms;
+						socket.emit('chat message', result_newrooms[0].description);
+					});
 				}
 				if (msg['msg']=="where") {
 					socket.emit('chat message', result_rooms[0].description);
@@ -83,7 +117,12 @@ io.on('connection', (socket) => {
     //io.emit('chat message', msg['username'] + ":" + msg['msg']);
   });
 	socket.on('signin', (msg) => {
-		// get socket_id
+		// save socket_id
+		var query = { name: msg };
+		var newvalues = { $set: {clientID: socket.id} };
+		dbo.collection("users").updateOne(query, newvalues, function(err, res) {
+		});
+		console.log(socket.id);
 	});
 });
 

@@ -41,7 +41,7 @@ MongoClient.connect(url, {useUnifiedTopology: true,useNewUrlParser: true}, funct
     { description: 'you are in room 1', up: '0', down: '3', left: '0', right: '2', room_id: '1'},
     { description: 'you are in room 2', up: '0', down: '4', left: '1', right: '0', room_id: '2'},
     { description: 'you are in room 3', up: '1', down: '0', left: '0', right: '4', room_id: '3'},
-    { description: 'you are in room 4', up: '1', down: '0', left: '3', right: '0', room_id: '4'}
+    { description: 'you are in room 4', up: '2', down: '0', left: '3', right: '0', room_id: '4'}
   ];
   dbo.collection("rooms").insertMany(listOfRooms, function(err, res) {
     if (err) throw err;

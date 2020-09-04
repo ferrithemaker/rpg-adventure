@@ -52,13 +52,21 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User disconnected from: ' + socket.handshake.address);
     io.emit('chat message', 'User disconnected from: ' + socket.handshake.address);
+    // remove user from connected
+	var query = { clientID: socket.id };
+	var newvalues = { $set: {clientID: '', connected: '0'} };
+	dbo.collection("users").updateOne(query, newvalues, function(err, res) {
+	});
+	console.log(socket.id);
   });
   socket.on('chat message', (msg) => {
 		var query = {name: msg['username']};
+		var currentUserRoom;
 		dbo.collection("users").find(query).toArray(function(err_users, result_users) {
 			if (err_users) throw err_users;
 			console.log(result_users[0]);
 			console.log(result_users[0].room);
+			currentUserRoom = result_users[0].room;
 			var query = {room_id: result_users[0].room};
 			console.log(query);
 				dbo.collection("rooms").find(query).toArray(function(err_rooms, result_rooms) {
@@ -114,15 +122,25 @@ io.on('connection', (socket) => {
 			});
 		});
     console.log('Message from ' + msg['username'] + ":" + msg['msg']);
+    // if not any control msg, sent it to all users in the room
+    dbo.collection("users").find({}).toArray(function(err, result) {
+		if (err) throw err;
+		result.forEach(user => { 
+			if (user.connected == '1' && user.room == currentUserRoom) {
+				io.to(user.clientID).emit("chat message", msg['username'] + ":" + msg['msg']);
+			}
+		}); 
+	});
     //io.emit('chat message', msg['username'] + ":" + msg['msg']);
   });
 	socket.on('signin', (msg) => {
 		// save socket_id
 		var query = { name: msg };
-		var newvalues = { $set: {clientID: socket.id} };
+		var newvalues = { $set: {clientID: socket.id, connected: '1'} };
 		dbo.collection("users").updateOne(query, newvalues, function(err, res) {
 		});
 		console.log(socket.id);
+		io.to(socket.id).emit("chat message", "sign IN");
 	});
 });
 

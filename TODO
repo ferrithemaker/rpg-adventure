@@ -1,16 +1,15 @@
-En realidad falta TODO :P
-
 Infraestructura:
 
-He pensado en utilizar node.js con express y sockets.io para conseguir un entorno web multiusuario interactivo y asincrono, no se que os parece, pero creo que con otros lenguajes como PHP 'oldstyle' mas pensados para entornos sincronos son bastante farragosos de implementar.
-En realidad esto solo es un chat, pero creo que sive como base para la infraestructura, faltaria añadir un sistema para guardar los jugadores, su estado, añadir un sistema de login, etc... como los elementos mas relevantes.
+Disponemos de un entorno web multiusuario interactivo y asincronos con una estructura básica basada en habitaciones (rooms). El jugador se puede mover por las habitaciones y chatear con los usuarios que estan en la misma habitación.
+Esta es la infraestrctura más esencial para crear el juego (inexistente ahora mismo)
+
+Cosas inmediatas pendientes:
 
 - Registro (ahora login con usuario estaticos)
-- BBDD (Mongodb) para entorno de juego
-- Usar un motor de templates html para evitar compartir dato mediante cookies.
-- Muchas mas cosas...
+- Usar un motor de templates html para evitar compartir datos (en este caso el usuario) mediante cookies.
 
-Logica:
 
-La idea es que cuando un jugador envia un mensaje, este sea procesado por una clase que incorpore toda la logica del juego, actualize el estado del jugador y devuelva una respuesta. En realidad ese seria el juego, que evidentemente, no existe :)
+Lógica:
+
+La idea es que cuando un jugador envia un mensaje, este sea procesado por una clase que incorpore toda la lógica del juego, actualize el estado del jugador y devuelva una respuesta. En realidad ese sería el juego, que evidentemente, no existe :)
 

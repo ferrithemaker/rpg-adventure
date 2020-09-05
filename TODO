@@ -13,3 +13,9 @@ Lógica:
 
 La idea es que cuando un jugador envia un mensaje, este sea procesado por una clase que incorpore toda la lógica del juego, actualize el estado del jugador y devuelva una respuesta. En realidad ese sería el juego, que evidentemente, no existe :)
 
+Temas a pensar:
+
+- Historia del juego y objetivo
+- Stats de los personajes ¿simples o complejos?
+- Inventario y listado de objetos y sus caracteristicas
+- Enemigos

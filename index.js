@@ -9,6 +9,9 @@ var mongo = require('mongodb');
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/rpg";
 
+// custom functions
+var rooms = require('./rooms');
+
 var dbo;
 
 app.use(session({
@@ -62,62 +65,51 @@ io.on('connection', (socket) => {
   socket.on('chat message', (msg) => {
 		var query = {name: msg['username']};
 		var currentUserRoom;
-		dbo.collection("users").find(query).toArray(function(err_users, result_users) {
+		dbo.collection("users").findOne(query, function(err_users, result_users) {
 			if (err_users) throw err_users;
-			console.log(result_users[0]);
-			console.log(result_users[0].room);
-			currentUserRoom = result_users[0].room;
-			var query = {room_id: result_users[0].room};
-			console.log(query);
-				dbo.collection("rooms").find(query).toArray(function(err_rooms, result_rooms) {
+			console.log(result_users.room);
+			currentUserRoom = result_users.room;
+			rooms.getInfo(dbo,result_users.room, function(err_rooms,result_rooms) {
 				if (err_rooms) throw err_rooms;
 				console.log(result_rooms);
-				if ((msg['msg']=="up" || msg['msg']=="arriba") && result_rooms[0].up!='0') {
+				if ((msg['msg']=="up" || msg['msg']=="arriba") && result_rooms.up!='0') {
 					var query = { name: msg['username'] };
-					var newvalues = { $set: {room: result_rooms[0].up } };
+					var newvalues = { $set: {room: result_rooms.up } };
 					dbo.collection("users").updateOne(query, newvalues, function(err, res) {
 					});
-					var query = {room_id: result_rooms[0].up};
-					dbo.collection("rooms").find(query).toArray(function(err_newrooms, result_newrooms) {
-						if (err_newrooms) throw err_newrooms;
-						socket.emit('chat message', result_newrooms[0].description);
+					rooms.getInfo(dbo,result_rooms.up, function(err,roominfo) {
+						socket.emit('chat message', roominfo.description);
+					});	
+				}
+				if ((msg['msg']=="down" || msg['msg']=="abajo") && result_rooms.down!='0') {
+					var query = { name: msg['username'] };
+					var newvalues = { $set: {room: result_rooms.down } };
+					dbo.collection("users").updateOne(query, newvalues, function(err, res) {
+					});
+					rooms.getInfo(dbo,result_rooms.down, function(err,roominfo) {
+						socket.emit('chat message', roominfo.description);
 					});
 				}
-				if ((msg['msg']=="down" || msg['msg']=="abajo") && result_rooms[0].down!='0') {
+				if ((msg['msg']=="left" || msg['msg']=="izquierda") && result_rooms.left!='0') {
 					var query = { name: msg['username'] };
-					var newvalues = { $set: {room: result_rooms[0].down } };
+					var newvalues = { $set: {room: result_rooms.left } };
 					dbo.collection("users").updateOne(query, newvalues, function(err, res) {
 					});
-					var query = {room_id: result_rooms[0].down};
-					dbo.collection("rooms").find(query).toArray(function(err_newrooms, result_newrooms) {
-						if (err_newrooms) throw err_newrooms;
-						socket.emit('chat message', result_newrooms[0].description);
+					rooms.getInfo(dbo,result_rooms.left, function(err,roominfo) {
+						socket.emit('chat message', roominfo.description);
 					});
 				}
-				if ((msg['msg']=="left" || msg['msg']=="izquierda") && result_rooms[0].left!='0') {
+				if ((msg['msg']=="right" || msg['msg']=="derecha") && result_rooms.right!='0') {
 					var query = { name: msg['username'] };
-					var newvalues = { $set: {room: result_rooms[0].left } };
+					var newvalues = { $set: {room: result_rooms.right } };
 					dbo.collection("users").updateOne(query, newvalues, function(err, res) {
 					});
-					var query = {room_id: result_rooms[0].left};
-					dbo.collection("rooms").find(query).toArray(function(err_newrooms, result_newrooms) {
-						if (err_newrooms) throw err_newrooms;
-						socket.emit('chat message', result_newrooms[0].description);
-					});
-				}
-				if ((msg['msg']=="right" || msg['msg']=="derecha") && result_rooms[0].right!='0') {
-					var query = { name: msg['username'] };
-					var newvalues = { $set: {room: result_rooms[0].right } };
-					dbo.collection("users").updateOne(query, newvalues, function(err, res) {
-					});
-					var query = {room_id: result_rooms[0].right};
-					dbo.collection("rooms").find(query).toArray(function(err_newrooms, result_newrooms) {
-						if (err_newrooms) throw err_newrooms;
-						socket.emit('chat message', result_newrooms[0].description);
+					rooms.getInfo(dbo,result_rooms.right, function(err,roominfo) {
+						socket.emit('chat message', roominfo.description);
 					});
 				}
 				if (msg['msg']=="where" || msg['msg']=="donde") {
-					socket.emit('chat message', result_rooms[0].description);
+					socket.emit('chat message', result_rooms.description);
 				}
 			});
 		});

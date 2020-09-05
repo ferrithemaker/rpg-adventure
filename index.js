@@ -52,7 +52,7 @@ io.on('connection', (socket) => {
     console.log('User disconnected from: ' + socket.handshake.address);
     io.emit('chat message', 'User disconnected from: ' + socket.handshake.address);
     // disconnect user
-    players.setDisconnected(dbo,socket.id, function(err, res) {
+	players.setDisconnected(dbo,socket.id, function(err, res) {
 		if (err) throw err;
 	});
 	console.log(socket.id);

@@ -11,6 +11,7 @@ var url = "mongodb://localhost:27017/rpg";
 
 // custom functions
 var rooms = require('./rooms');
+var players = require('./players');
 
 var dbo;
 
@@ -35,12 +36,7 @@ app.get('/home', (req, res) => {
 	if (req.session.loggedin) {
 		res.sendFile(__dirname + '/html/home.html');
 		console.log(req.session.username);
-		dbo.collection("users").findOne({}, function(err, result) {
-			if (err) throw err;
-			//console.log(result);
-		});
 	}
-   
 });
 
 app.get('/send/:info', (req,res) => {
@@ -55,56 +51,53 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User disconnected from: ' + socket.handshake.address);
     io.emit('chat message', 'User disconnected from: ' + socket.handshake.address);
-    // remove user from connected
-	var query = { clientID: socket.id };
-	var newvalues = { $set: {clientID: '', connected: '0'} };
-	dbo.collection("users").updateOne(query, newvalues, function(err, res) {
+    // disconnect user
+    players.setDisconnected(dbo,socket.id, function(err, res) {
+		if (err) throw err;
 	});
 	console.log(socket.id);
   });
   socket.on('chat message', (msg) => {
-		var query = {name: msg['username']};
 		var currentUserRoom;
-		dbo.collection("users").findOne(query, function(err_users, result_users) {
+		players.getInfo(dbo,msg['username'], function(err_users, result_users) {
 			if (err_users) throw err_users;
-			console.log(result_users.room);
 			currentUserRoom = result_users.room;
 			rooms.getInfo(dbo,result_users.room, function(err_rooms,result_rooms) {
 				if (err_rooms) throw err_rooms;
 				console.log(result_rooms);
 				if ((msg['msg']=="up" || msg['msg']=="arriba") && result_rooms.up!='0') {
-					var query = { name: msg['username'] };
-					var newvalues = { $set: {room: result_rooms.up } };
-					dbo.collection("users").updateOne(query, newvalues, function(err, res) {
+					players.updateRoom(dbo,msg['username'],result_rooms.up, function(err,result) {
+						if (err) throw err;
 					});
 					rooms.getInfo(dbo,result_rooms.up, function(err,roominfo) {
+						if (err) throw err;
 						socket.emit('chat message', roominfo.description);
 					});	
 				}
 				if ((msg['msg']=="down" || msg['msg']=="abajo") && result_rooms.down!='0') {
-					var query = { name: msg['username'] };
-					var newvalues = { $set: {room: result_rooms.down } };
-					dbo.collection("users").updateOne(query, newvalues, function(err, res) {
+					players.updateRoom(dbo,msg['username'],result_rooms.down, function(err,result) {
+						if (err) throw err;
 					});
 					rooms.getInfo(dbo,result_rooms.down, function(err,roominfo) {
+						if (err) throw err;
 						socket.emit('chat message', roominfo.description);
 					});
 				}
 				if ((msg['msg']=="left" || msg['msg']=="izquierda") && result_rooms.left!='0') {
-					var query = { name: msg['username'] };
-					var newvalues = { $set: {room: result_rooms.left } };
-					dbo.collection("users").updateOne(query, newvalues, function(err, res) {
+					players.updateRoom(dbo,msg['username'],result_rooms.left, function(err,result) {
+						if (err) throw err;
 					});
 					rooms.getInfo(dbo,result_rooms.left, function(err,roominfo) {
+						if (err) throw err;
 						socket.emit('chat message', roominfo.description);
 					});
 				}
 				if ((msg['msg']=="right" || msg['msg']=="derecha") && result_rooms.right!='0') {
-					var query = { name: msg['username'] };
-					var newvalues = { $set: {room: result_rooms.right } };
-					dbo.collection("users").updateOne(query, newvalues, function(err, res) {
+					players.updateRoom(dbo,msg['username'],result_rooms.right, function(err,result) {
+						if (err) throw err;
 					});
 					rooms.getInfo(dbo,result_rooms.right, function(err,roominfo) {
+						if (err) throw err;
 						socket.emit('chat message', roominfo.description);
 					});
 				}
@@ -112,24 +105,19 @@ io.on('connection', (socket) => {
 					socket.emit('chat message', result_rooms.description);
 				}
 			});
+			// Sent info or msg to all users in the room
+			players.getActiveUsersSameRoom(dbo,currentUserRoom, function(err,result) {
+				result.forEach(user => { 
+					io.to(user.clientID).emit("chat message", msg['username'] + ":" + msg['msg']);
+				}); 
+			});
 		});
     console.log('Message from ' + msg['username'] + ":" + msg['msg']);
-    // if not any control msg, sent it to all users in the room
-    dbo.collection("users").find({}).toArray(function(err, result) {
-		if (err) throw err;
-		result.forEach(user => { 
-			if (user.connected == '1' && user.room == currentUserRoom) {
-				io.to(user.clientID).emit("chat message", msg['username'] + ":" + msg['msg']);
-			}
-		}); 
-	});
-    //io.emit('chat message', msg['username'] + ":" + msg['msg']);
   });
 	socket.on('signin', (msg) => {
-		// save socket_id
-		var query = { name: msg };
-		var newvalues = { $set: {clientID: socket.id, connected: '1'} };
-		dbo.collection("users").updateOne(query, newvalues, function(err, res) {
+		// save socket_id when signin
+		players.updateSocketID(dbo,msg,socket.id, function(err,result) {
+			if (err) throw err;
 		});
 		console.log(socket.id);
 		io.to(socket.id).emit("chat message", "sign IN");
@@ -140,8 +128,7 @@ app.post('/auth', function(request, response) {
 	var username = request.body.username;
 	var password = request.body.password;
 	if (username && password) {
-		var query = { name: username, passwd: password };
-		dbo.collection("users").find(query).toArray(function(err, result) {
+		players.checkUser(dbo,username,password, function(err, result) {
 			if (err) throw err;
 			if (result.length > 0) {
 				request.session.loggedin = true;

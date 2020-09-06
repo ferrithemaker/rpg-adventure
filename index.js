@@ -64,8 +64,10 @@ io.on('connection', (socket) => {
 			currentUserRoom = result_users.room;
 			rooms.getInfo(dbo,result_users.room, function(err_rooms,result_rooms) {
 				if (err_rooms) throw err_rooms;
+				var isControlMsg = false;
 				console.log(result_rooms);
 				if ((msg['msg']=="up" || msg['msg']=="arriba") && result_rooms.up!='0') {
+					isControlMsg = true;
 					players.updateRoom(dbo,msg['username'],result_rooms.up, function(err,result) {
 						if (err) throw err;
 					});
@@ -75,6 +77,7 @@ io.on('connection', (socket) => {
 					});	
 				}
 				if ((msg['msg']=="down" || msg['msg']=="abajo") && result_rooms.down!='0') {
+					isControlMsg = true;
 					players.updateRoom(dbo,msg['username'],result_rooms.down, function(err,result) {
 						if (err) throw err;
 					});
@@ -84,6 +87,7 @@ io.on('connection', (socket) => {
 					});
 				}
 				if ((msg['msg']=="left" || msg['msg']=="izquierda") && result_rooms.left!='0') {
+					isControlMsg = true;
 					players.updateRoom(dbo,msg['username'],result_rooms.left, function(err,result) {
 						if (err) throw err;
 					});
@@ -93,6 +97,7 @@ io.on('connection', (socket) => {
 					});
 				}
 				if ((msg['msg']=="right" || msg['msg']=="derecha") && result_rooms.right!='0') {
+					isControlMsg = true;
 					players.updateRoom(dbo,msg['username'],result_rooms.right, function(err,result) {
 						if (err) throw err;
 					});
@@ -102,14 +107,17 @@ io.on('connection', (socket) => {
 					});
 				}
 				if (msg['msg']=="where" || msg['msg']=="donde") {
+					isControlMsg = true;
 					socket.emit('chat message', result_rooms.description);
 				}
-			});
-			// Sent info or msg to all users in the room
-			players.getActiveUsersSameRoom(dbo,currentUserRoom, function(err,result) {
-				result.forEach(user => { 
-					io.to(user.clientID).emit("chat message", msg['username'] + ":" + msg['msg']);
-				}); 
+				// Sent chat msg to all users in the room
+				if (!isControlMsg) {
+					players.getActiveUsersSameRoom(dbo,currentUserRoom, function(err,result) {
+						result.forEach(user => { 
+							io.to(user.clientID).emit("chat message", msg['username'] + ":" + msg['msg']);
+						}); 
+					});
+				}
 			});
 		});
     console.log('Message from ' + msg['username'] + ":" + msg['msg']);

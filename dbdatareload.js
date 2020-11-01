@@ -65,7 +65,7 @@ MongoClient.connect(url, {useUnifiedTopology: true,useNewUrlParser: true}, funct
   dbo.collection("objects").drop(function(err, delOK) {
     if (err) throw err;
     if (delOK) console.log("Collection objects deleted");
-	dbo.collection("rooms").insertMany(listOfObjects, function(err, res) {
+	dbo.collection("objects").insertMany(listOfObjects, function(err, res) {
 		if (err) throw err;
 		console.log("Number of objects inserted: " + res.insertedCount);
 		db.close();

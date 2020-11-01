@@ -43,3 +43,18 @@ MongoClient.connect(url, {useUnifiedTopology: true,useNewUrlParser: true}, funct
   });
 });
 
+MongoClient.connect(url, {useUnifiedTopology: true,useNewUrlParser: true}, function(err, db) {
+  if (err) throw err;
+  var dbo = db.db("rpg");
+  var listOfObjects = [
+    { name: "axe", attack: '5', defense: '0', player_name: 'empty'},
+    { name: "spear", attack: '4', defense: '0', player_name: 'empty'},
+    { name: "wood shield", attack: '0', defense: '3', player_name: 'empty'},
+    { name: "iron shield", attack: '0', defense: '5', player_name: 'empty'}
+  ];
+  dbo.collection("objects").insertMany(listOfObjects, function(err, res) {
+  	if (err) throw err;
+	console.log("Number of objects inserted: " + res.insertedCount);
+	db.close();
+  });
+});

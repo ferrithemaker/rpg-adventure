@@ -14,9 +14,9 @@ MongoClient.connect(url, {useUnifiedTopology: true,useNewUrlParser: true}, funct
   var dbo = db.db("rpg");
   // no encrypted passwords by now
   var listOfUsers = [
-    { name: 'user1', passwd: 'pas1',room: '1', clientID: '',connected: '0'},
-    { name: 'user2', passwd: 'pas2',room: '1', clientID: '',connected: '0'},
-    { name: 'user3', passwd: 'pas3',room: '1', clientID: '',connected: '0'}
+    { name: 'user1', passwd: 'pas1',room: '1', attack: '10', life: '10', mana: '10', magic: '10', defense: '10', clientID: '',connected: '0'},
+    { name: 'user2', passwd: 'pas2',room: '1', attack: '10', life: '10', mana: '10', magic: '10', defense: '10', clientID: '',connected: '0'},
+    { name: 'user3', passwd: 'pas3',room: '1', attack: '10', life: '10', mana: '10', magic: '10', defense: '10', clientID: '',connected: '0'}
   ];
   dbo.collection("users").insertMany(listOfUsers, function(err, res) {
   	if (err) throw err;

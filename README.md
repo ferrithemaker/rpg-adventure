@@ -14,4 +14,7 @@ Local installation instructions:
 
 Commands:
 
-You have 4 rooms, you can move with the commands `up` / `arriba` `down` / `abajo` `left` / `izquierda` `right` / `derecha` and `where` / `donde`
+You have 4 rooms, you can move with the commands `up` / `arriba` `down` / `abajo` `left` / `izquierda` `right` / `derecha`
+
+`where` / `donde` to get room info
+`stats` to check the stats

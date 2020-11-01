@@ -66,6 +66,7 @@ io.on('connection', (socket) => {
 				if (err_rooms) throw err_rooms;
 				var isControlMsg = false;
 				console.log(result_rooms);
+				console.log(result_rooms.room_id)
 				if ((msg['msg']=="up" || msg['msg']=="arriba") && result_rooms.up!='0') {
 					isControlMsg = true;
 					players.updateRoom(dbo,msg['username'],result_rooms.up, function(err,result) {
@@ -74,7 +75,7 @@ io.on('connection', (socket) => {
 					rooms.getInfo(dbo,result_rooms.up, function(err,roominfo) {
 						if (err) throw err;
 						socket.emit('chat message', roominfo.description);
-					});	
+					});
 				}
 				if ((msg['msg']=="down" || msg['msg']=="abajo") && result_rooms.down!='0') {
 					isControlMsg = true;
@@ -104,6 +105,14 @@ io.on('connection', (socket) => {
 					rooms.getInfo(dbo,result_rooms.right, function(err,roominfo) {
 						if (err) throw err;
 						socket.emit('chat message', roominfo.description);
+					});
+				}
+				if (msg['msg']=="stats") {
+					isControlMsg = true;
+					players.getStats(dbo,msg['username'], function(err,result) {
+						if (err) throw err;
+						console.log(result)
+						socket.emit('chat message', "Attack:"+result.attack+" Defense:"+result.defense+" Life:"+result.life+" Mana:"+result.mana+" Magic:"+result.magic);
 					});
 				}
 				if (msg['msg']=="where" || msg['msg']=="donde") {

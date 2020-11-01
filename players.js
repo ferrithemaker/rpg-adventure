@@ -11,6 +11,16 @@ module.exports = {
 			callback(null,result_rooms);
 		});
   },
+	getStats: function (dbo,username,callback) {
+		var query = {name: username};
+		dbo.collection("users").findOne(query,function(err_rooms, result_rooms) {
+			if (err_rooms) {
+				callback(new Error("Problems with users query"));
+			}
+			var stats = { attack: result_rooms.attack, life: result_rooms.life, mana: result_rooms.mana, magic: result_rooms.magic, defense: result_rooms.defense }
+            callback(null,stats);
+        });
+  },
 	updateRoom: function(dbo,username,room,callback) {
 		var query = { name: username };
 		var newvalues = { $set: {room: room } };

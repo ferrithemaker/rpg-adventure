@@ -18,11 +18,17 @@ MongoClient.connect(url, {useUnifiedTopology: true,useNewUrlParser: true}, funct
     { name: 'user2', passwd: 'pas2',room: '1', clientID: '',connected: '0'},
     { name: 'user3', passwd: 'pas3',room: '1', clientID: '',connected: '0'}
   ];
-  dbo.collection("users").insertMany(listOfUsers, function(err, res) {
-  	if (err) throw err;
-	console.log("Number of users inserted: " + res.insertedCount);
-	db.close();
+  // delete collection if exist
+  dbo.collection("users").drop(function(err, delOK) {
+    if (err) throw err;
+    if (delOK) console.log("Collection users deleted");
+    dbo.collection("users").insertMany(listOfUsers, function(err, res) {
+		if (err) throw err;
+		console.log("Number of users inserted: " + res.insertedCount);
+		db.close();
+	});
   });
+  
 });
 
 MongoClient.connect(url, {useUnifiedTopology: true,useNewUrlParser: true}, function(err, db) {
@@ -36,10 +42,14 @@ MongoClient.connect(url, {useUnifiedTopology: true,useNewUrlParser: true}, funct
     { description: desc3, up: '1', down: '0', left: '0', right: '4', room_id: '3'},
     { description: desc4, up: '2', down: '0', left: '3', right: '0', room_id: '4'}
   ];
-  dbo.collection("rooms").insertMany(listOfRooms, function(err, res) {
-  	if (err) throw err;
-	console.log("Number of rooms inserted: " + res.insertedCount);
-	db.close();
+  dbo.collection("rooms").drop(function(err, delOK) {
+    if (err) throw err;
+    if (delOK) console.log("Collection rooms deleted");
+    dbo.collection("rooms").insertMany(listOfRooms, function(err, res) {
+		if (err) throw err;
+		console.log("Number of rooms inserted: " + res.insertedCount);
+		db.close();
+	});
   });
 });
 

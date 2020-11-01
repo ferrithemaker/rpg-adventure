@@ -36,7 +36,7 @@ module.exports = {
 			if (err) {
 				callback(new Error("Problems with users update socketID query"));
 			}
-		});	
+		});
   },
 	checkUser: function (dbo,username,password,callback) {
 		var query = { name: username, passwd: password };

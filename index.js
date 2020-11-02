@@ -10,6 +10,7 @@ var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/rpg";
 
 // custom functions
+var objects = require('./objects');
 var rooms = require('./rooms');
 var players = require('./players');
 
@@ -113,6 +114,15 @@ io.on('connection', (socket) => {
 						if (err) throw err;
 						console.log(result)
 						socket.emit('chat message', "Attack:"+result.attack+" Defense:"+result.defense+" Life:"+result.life+" Mana:"+result.mana+" Magic:"+result.magic);
+					});
+					players.getObjects(dbo,msg['username'], function(err,result) {
+						if (err) throw err;
+						console.log(result)
+						socket.emit('chat message', "Objects:");
+						result.forEach(function(value){
+							socket.emit('chat message', value.name);
+}						);
+						
 					});
 				}
 				if (msg['msg']=="where" || msg['msg']=="donde") {

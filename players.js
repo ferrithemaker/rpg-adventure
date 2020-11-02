@@ -1,7 +1,10 @@
 // player.js
 // ========
 
+var objects = require('./objects');
+
 module.exports = {
+	
 	getInfo: function (dbo,username,callback) {
 		var query = {name: username};
 		dbo.collection("users").findOne(query,function(err_rooms, result_rooms) {
@@ -20,6 +23,12 @@ module.exports = {
 			var stats = { attack: result_rooms.attack, life: result_rooms.life, mana: result_rooms.mana, magic: result_rooms.magic, defense: result_rooms.defense }
             callback(null,stats);
         });
+  },
+	getObjects: function (dbo,username,callback) {
+			objects.getPlayerObjects(dbo,username, function(err,res_obj) {
+				if (err) throw err;
+				callback(null,res_obj);
+			});
   },
 	updateRoom: function(dbo,username,room,callback) {
 		var query = { name: username };

@@ -57,10 +57,10 @@ MongoClient.connect(url, {useUnifiedTopology: true,useNewUrlParser: true}, funct
   if (err) throw err;
   var dbo = db.db("rpg");
   var listOfObjects = [
-    { name: "axe", attack: '5', defense: '0', player_name: 'user1'},
-    { name: "spear", attack: '4', defense: '0', player_name: 'user1'},
-    { name: "wood shield", attack: '0', defense: '3', player_name: 'user1'},
-    { name: "iron shield", attack: '0', defense: '5', player_name: 'user1'}
+    { name: "axe", attack: '5', defense: '0', player_name: 'user1', room_id: '1', disable: true},
+    { name: "spear", attack: '4', defense: '0', player_name: 'empty', room_id: '1', disable: true},
+    { name: "wood shield", attack: '0', defense: '3', player_name: 'empty', room_id: '1', disable: true},
+    { name: "iron shield", attack: '0', defense: '5', player_name: 'empty', room_id: '1', disable: true}
   ];
   dbo.collection("objects").drop(function(err, delOK) {
     if (err) throw err;
